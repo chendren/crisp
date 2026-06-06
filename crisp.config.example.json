@@ -1,0 +1,7 @@
+{
+  "autoEnhance": true,
+  "defaultProfile": "non-native",
+  "aggressiveness": "medium",
+  "includePersonalStandards": true,
+  "comment": "Place crisp.config.json next to your CLAUDE.md or in plugin data dir for overrides. autoEnhance controls the UserPromptSubmit hook."
+}

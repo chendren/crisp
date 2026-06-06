@@ -1,0 +1,19 @@
+{
+  "name": "crisp",
+  "version": "0.1.0",
+  "description": "Ultra-clear prompts for non-native English speakers and vibe coders using Grok Build, Claude Code, Kiro, etc.",
+  "type": "module",
+  "bin": {
+    "crisp": "./bin/crisp.mjs"
+  },
+  "files": [
+    "hooks",
+    "skills",
+    "src",
+    "steering",
+    ".claude-plugin",
+    "README.md"
+  ],
+  "license": "MIT",
+  "author": "Chad Hendren"
+}

@@ -1,0 +1,16 @@
+{
+  "description": "crisp — auto-enhances user prompts for non-native English speakers and vibe/casual descriptions. Fast deterministic rewriter + systemMessage injection on UserPromptSubmit.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/crisp-submit.mjs",
+            "timeout": 8
+          }
+        ]
+      }
+    ]
+  }
+}
