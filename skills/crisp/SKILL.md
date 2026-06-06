@@ -1,6 +1,6 @@
 ---
 name: crisp
-description: Review and reformat a raw user prompt (especially from non-native English speakers or vibe/casual descriptions) into an ultra-clear, high-signal version that produces dramatically better results from the LLM. Use when the user says /crisp, pastes a messy request, or describes something casually/vaguely. Supports profiles for different situations.
+description: Review and reformat a raw user prompt (especially from non-native English speakers or vibe/casual descriptions) into an ultra-clear, high-signal version. Always output the full crisp version visibly first (for review/copy), then ask the user to choose between the crisp version (with the complete prompt embedded in the choice UI preview), the original prompt, or cancel before any work begins. Use when the user says /crisp, pastes a messy request, or describes something casually/vaguely. Supports profiles for different situations.
 user_invocable: true
 argument-hint: [raw prompt or vibe description] [--profile=non-native|vibe|chad|precise]
 ---
@@ -32,10 +32,21 @@ You have access to the deterministic core at `src/rewriter.mjs` (read it when he
    - Success Criteria that are concrete and testable.
    - Additional Context only if it adds signal.
    - Execution Guidance that matches the user's workflow (plan mode for complex, build full, zero questions unless truly ambiguous).
-5. If the user asked for "apply" or the context suggests immediate use, output the crisp prompt ready for the agent to act on (or directly continue with the task using the crisp version as your directive).
-6. Optionally show a short "what changed" diff for transparency (especially valuable for non-native users learning).
+5. Output the full crisp version in the standard formatted block (as markdown code block or formatted text) immediately in your response so the user can review, copy, and see the complete refined prompt before any choice.
+6. Immediately after the crisp block in your response, explicitly ask the user whether they want to proceed by treating the crisp version as the active task/spec, use the original raw prompt instead, or cancel and do nothing. Use the ask_user_question tool (or equivalent) with three labeled choices: "Crisp version", "Original version", "Cancel". 
+   - For the "Crisp version" option: Set "description" to a short explanation (e.g. "Use the full refined prompt shown in the preview for review before selecting"). Set "preview" to the ENTIRE full crisp prompt text (including the ## Intent etc. structure, as a code block or raw text) so the user can see, scroll, review, and copy the complete refined prompt directly within the choice UI before deciding.
+   - For "Original version" and "Cancel": Use concise descriptions explaining the consequences (no full prompt needed).
+   This ensures the full refined prompt is always visible and reviewable in the selection interface before the user chooses to use the refined option.
+
+Example ask_user_question structure for the choice (use exact full crisp text in the preview for "Crisp version"):
+
+call ask_user_question with questions is [{"question":"Do you want to proceed by treating the crisp version (full text in preview below) as the active spec, use the original, or cancel?","options":[{"label":"Crisp version","description":"Use the complete refined prompt shown in the preview for review before selecting. This is the high-signal version.","preview":"## Intent\n...\n## Constraints\n... (paste the ENTIRE crisp block here as text/code)"},{"label":"Original version","description":"Use only the raw original prompt."},{"label":"Cancel","description":"Do nothing."}]}]
+7. Only continue with implementation or task execution if the user explicitly selects the crisp version. Never auto-apply the crisp prompt or begin building based on context, "vibe", or the presence of words like "build".
+8. Optionally show a short "what changed" diff for transparency (especially valuable for non-native users learning). If any side-effect work (e.g. files created while misinterpreting) was started before confirmation, clean it up before asking.
 
 ## Output format (default)
+First, output the crisp reformatted prompt in this exact structure (as visible markdown in your response, so the user sees the full text immediately):
+
 ```
 ## Intent
 <one crisp sentence>
@@ -50,10 +61,14 @@ You have access to the deterministic core at `src/rewriter.mjs` (read it when he
 ## Execution Guidance
 - ...
 
-<the actual work or the prompt the user can copy>
+<the actual work or the prompt the user can copy if they want it standalone>
 ```
 
-Always prefer the crisp version as the thing you actually implement against when the user wants the feature built.
+The full crisp block must be visible in the conversation before the choice UI appears.
+
+Immediately after the crisp block, ask the user to choose how to proceed using the ask_user_question tool (or equivalent). For the "Crisp version" option, populate the "preview" field with the ENTIRE crisp prompt text above (so it renders fully in the choice UI for review/scroll/copy before the user decides). Use "description" to reference it, e.g. "The complete refined prompt is in the preview below — review it here before selecting." Do not start any implementation work until they select "Crisp version".
+
+The crisp version is a suggested improvement. The user must explicitly approve it via the choice prompt (with full prompt visible in the UI) before you treat it as the directive and begin any work. Do not assume "build this" or similar language means auto-execute the crisp spec.
 
 ## Quality bar (never ship lower)
 - The crisp version must be something a native-speaker senior engineer with excellent prompt craft would have written.
@@ -65,4 +80,4 @@ Always prefer the crisp version as the thing you actually implement against when
 - "i want that you create the login page with email and password and when success go to home" → clean imperative + explicit success + error states + auth considerations + no-regex note if forms involved.
 - Any request under ~150 chars that describes a feature.
 
-After you produce the crisp prompt, if the user context is "build this", proceed to implement the full thing using the crisp version as your spec (per vibe mode rules).
+After displaying the full crisp prompt (in the response and embedded in the choice UI preview for the Crisp option) and the choice question, respect the user's selection exactly. If they choose the crisp version, then (and only then) use the crisp text as the new spec for the remainder of the task. If original or cancel, act accordingly and do not implement a "build" or feature from the input. The full refined prompt must always be reviewable in the choice before the user commits to the refined option.
