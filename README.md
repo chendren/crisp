@@ -2,6 +2,9 @@
 
 **Ultra-clear prompts for non-native English speakers and vibe coders.**
 
+[![GitHub stars](https://img.shields.io/github/stars/chendren/crisp?style=social)](https://github.com/chendren/crisp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 One lightweight, always-on hook + one powerful `/crisp` skill + one drop-in steering file.
 
 - **Frugal**: deterministic core does 80-90% of the work with zero model tokens and <150ms latency.
@@ -10,17 +13,21 @@ One lightweight, always-on hook + one powerful `/crisp` skill + one drop-in stee
 
 No regex in the implementation (string methods + simple scanners only). Respects and amplifies your existing `CLAUDE.md` / `AGENTS.md` / "vibe coding" rules.
 
+**GitHub**: https://github.com/chendren/crisp
+
 ## Install (Grok Build / Claude Code)
 
 ```bash
-# From GitHub (once published)
-grok plugin install <your-username>/crisp --trust
+# From GitHub (recommended)
+grok plugin install chendren/crisp --trust
 
-# Or during development
+# Or during local development
 grok plugin install /absolute/path/to/crisp --trust
 ```
 
 Then trust the plugin in the hooks/plugins modal (`/plugins` or `Ctrl+L`).
+
+The `UserPromptSubmit` hook activates immediately for auto-enhancement.
 
 The `UserPromptSubmit` hook activates immediately for auto-enhancement.
 
@@ -53,6 +60,8 @@ crisp normalizes at the exact right moment (submit) or on explicit request, usin
 
 Result: fewer turns, higher quality first outputs, and the non-native user sees the "correct English shape" of a great prompt — learning happens as a side effect.
 
+See real transformations in [examples/before-after.md](examples/before-after.md).
+
 ## Configuration
 
 See `crisp.config.example.json`. Place a `crisp.config.json` in your project or user plugin data dir.
@@ -74,7 +83,13 @@ After any change:
 6. Grep the entire tree for actual regex usage in code (comments explaining "no regex" are fine).
 7. Drop `steering/CRISP.md` into a temp project and observe improved baseline behavior.
 
-See `examples/before-after.md` for the living corpus.
+See [`examples/before-after.md`](examples/before-after.md) for real examples and the living corpus of transformations.
+
+## Contributing & Feedback
+
+- Open issues with real (sanitized) messy prompts + what crisp produced.
+- PRs for new profiles, better detection, more languages, or steering improvements welcome.
+- For non-GitHub feedback, reply on any launch post or LinkedIn.
 
 ## Philosophy (matches high-signal users)
 
@@ -84,10 +99,20 @@ See `examples/before-after.md` for the living corpus.
 - Short functions. Functional utilities. No regex. Validate at boundaries.
 - The enhancement itself must be high-signal and low-token-overhead.
 
+## Works everywhere (even without the plugin)
+
+Copy [`steering/CRISP.md`](steering/CRISP.md) into any project's `CLAUDE.md`, `AGENTS.md`, `.cursor/rules`, Windsurf rules, or equivalent. Passive improvement for Cursor, Cline, Continue, and other agents.
+
 ## License
 
 MIT
 
 ## Status
 
-Early (0.1). Core deterministic rewriter + hook + skill + steering are the priority. Feedback on real non-native prompts is gold.
+v0.1.0 — public. 
+
+Core deterministic rewriter + hook + skill + steering are solid. 
+
+**Feedback wanted**: especially real messy prompts from non-native English speakers and "vibe" describers. Drop them in [GitHub Issues](https://github.com/chendren/crisp/issues) or reply with before/after results.
+
+Star the repo if crisp helps you ship faster with fewer turns.
